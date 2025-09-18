@@ -2,6 +2,10 @@
 name = "lfc"
 version = "0.1.0"
 edition = "2024"
+authors = ["bbkingisking <poodle.dollies_4y@icloud.com>"]
+description = "Summarize Liverpool FC news"
+license = "WTFPL"
+repository = "https://github.com/bbkingisking/lfc"
 
 [dependencies]
 anyhow = "1.0.99"
