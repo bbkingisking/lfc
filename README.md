@@ -19,10 +19,9 @@ The news for Liverpool over the past 24 hours is mostly positive, showcasing the
 ```
 ## Installation
 
-Make sure you have Rust installed.
+Make sure you have Rust installed, then: 
 
-1. Clone
-2. `cargo build --release`
+1. `cargo install lfc`
 
 ## Config
 
