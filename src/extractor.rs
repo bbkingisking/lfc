@@ -4,7 +4,7 @@ use scraper::{Html, Selector};
 use url::{Url};
 use anyhow::{Result, anyhow};
 use std::collections::{HashSet, HashMap};
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, Utc, Datelike};
 use log::debug;
 use crate::utils::clean_html_tags;
 
@@ -189,12 +189,16 @@ pub async fn extract_thisisanfield_articles() -> Result<HashSet<Url>> {
     let url_selector = Selector::parse("loc").unwrap();
     let mut links = HashSet::new();
 
+    // Get current year dynamically
+    let current_year = Utc::now().year();
+    let year_prefix = format!("https://www.thisisanfield.com/{}/", current_year);
+
     for element in document.select(&url_selector) {
         let url_text = element.text().collect::<String>();
         if let Ok(url) = Url::parse(&url_text) {
-            // Filter for Liverpool-related articles from 2025
+            // Filter for Liverpool-related articles from current year
             let url_str = url.to_string();
-            if url_str.starts_with("https://www.thisisanfield.com/2025/") {
+            if url_str.starts_with(&year_prefix) {
                 links.insert(url);
             }
         }
