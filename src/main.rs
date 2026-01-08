@@ -8,6 +8,7 @@ mod ai_deduplicator;
 mod utils;
 mod email;
 mod telegram;
+mod calendar;
 
 use anyhow::Result;
 use clap::Parser;

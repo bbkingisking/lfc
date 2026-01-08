@@ -1,8 +1,9 @@
 use anyhow::{Context, Result};
 use async_openai::{
     types::{
-        ChatCompletionRequestSystemMessage, ChatCompletionRequestUserMessage,
-        CreateChatCompletionRequestArgs, ResponseFormat, ResponseFormatJsonSchema,
+        ChatCompletionRequestMessage, ChatCompletionRequestSystemMessage,
+        ChatCompletionRequestUserMessage, CreateChatCompletionRequestArgs,
+        ResponseFormat, ResponseFormatJsonSchema,
     },
     Client,
     config::OpenAIConfig,
@@ -14,7 +15,7 @@ use tiktoken_rs::{o200k_base, CoreBPE};
 use chrono::Local;
 use log::debug;
 
-use crate::config::Config;
+use crate::{calendar::Fixture, config::Config};
 use crate::models::{NewsArticle, Summary, Bullet};
 
 #[derive(Debug, Deserialize)]
@@ -26,7 +27,7 @@ const MAX_TOKENS: usize = 100_000;
 const MIN_BODY_TOKENS: usize = 40; // don't over-trim tiny bodies
 const SEP_TOKENS_PER_ARTICLE: usize = 6; // rough buffer for "\n\n" joins
 
-pub async fn summarize_articles(cfg: &Config, articles: &[NewsArticle]) -> Result<Summary> {
+pub async fn summarize_articles(cfg: &Config, articles: &[NewsArticle], fixture: &Option<Fixture>) -> Result<Summary> {
     debug!("Starting summarize_articles with {} articles", articles.len());
     let api_key = &cfg.api_key;
 
@@ -87,12 +88,20 @@ pub async fn summarize_articles(cfg: &Config, articles: &[NewsArticle]) -> Resul
     };
 
     debug!("Building OpenAI request with model: {}", cfg.model);
+    let mut messages: Vec<ChatCompletionRequestMessage> = vec![
+        ChatCompletionRequestMessage::System(ChatCompletionRequestSystemMessage::from(system_prompt))
+    ];
+
+    messages.push(ChatCompletionRequestMessage::User(ChatCompletionRequestUserMessage::from(combined_text)));
+
+    if let Some(f) = fixture {
+        let prompt = format!("We are playing against {} today at {}. The first bullet point you generate should be about that match.", f.opponent, f.date);
+        messages.push(ChatCompletionRequestMessage::User(ChatCompletionRequestUserMessage::from(prompt)));
+    }
+
     let request = CreateChatCompletionRequestArgs::default()
         .model(&cfg.model)
-        .messages([
-            ChatCompletionRequestSystemMessage::from(system_prompt).into(),
-            ChatCompletionRequestUserMessage::from(combined_text).into(),
-        ])
+        .messages(messages)
         .response_format(response_format)
         .max_tokens(1000u32)
         .build()

@@ -1153,6 +1153,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ical"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9b7cab7543a8b7729a19e2c04309f902861293dcdae6558dfbeb634454d279f6"
+dependencies = [
+ "thiserror 1.0.69",
+]
+
+[[package]]
 name = "icu_collections"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1433,7 +1442,7 @@ dependencies = [
 
 [[package]]
 name = "lfc"
-version = "0.1.1"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "async-openai",
@@ -1441,6 +1450,7 @@ dependencies = [
  "clap",
  "env_logger",
  "futures",
+ "ical",
  "lettre",
  "log",
  "regex",

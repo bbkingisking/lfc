@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use url::Url;
 
+use crate::calendar::check_today_fixture;
 use crate::config::{Config, EnsureOutcome};
 use crate::db::{Db, load_existing_urls_from_db};
 use crate::models::NewsArticle;
@@ -37,7 +38,7 @@ pub async fn run_scraper(no_ai: bool, no_email: bool, no_telegram: bool) -> Resu
         error!("Email configuration is missing but email notifications are enabled. Use --no-email to skip email notifications or configure email settings.");
         return Ok(());
     }
-    
+
     if !no_telegram && cfg.telegram_bot_token.is_none() {
         error!("Telegram bot token is missing but telegram notifications are enabled. Use --no-telegram to skip telegram notifications or configure telegram_bot_token.");
         return Ok(());
@@ -135,7 +136,8 @@ pub async fn run_scraper(no_ai: bool, no_email: bool, no_telegram: bool) -> Resu
     // 10) Summarize
     let mut db = Db::open(&cfg)?;
     let previous_articles = db.load_articles_for_latest_fetch(&fetch_id)?;
-    let summary = summarize_articles(&cfg, &previous_articles).await?;
+    let today_fixture = check_today_fixture().await?;
+    let summary = summarize_articles(&cfg, &previous_articles, &today_fixture).await?;
 
     // 11) Deduplication sources
     let published_bullets   = db.fetch_latest_published_bullets()?;          // suppressors
@@ -173,7 +175,7 @@ pub async fn run_scraper(no_ai: bool, no_email: bool, no_telegram: bool) -> Resu
 
     // send notifications…
     let plain_text = format_summary_plain_text(&processed_summary);
-    
+
     let email_task = if no_email {
         info!("--no-email flag set, skipping email notifications");
         tokio::spawn(async { Ok(()) })
