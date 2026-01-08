@@ -18,8 +18,6 @@ jobs:
             target: aarch64-apple-darwin
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-          - os: windows-latest
-            target: x86_64-pc-windows-gnu
 
     steps:
       - uses: actions/checkout@v4
@@ -33,7 +31,6 @@ jobs:
           name: ${{ matrix.target }}
           path: |
             target/${{ matrix.target }}/release/${{ github.event.repository.name }}
-            target/${{ matrix.target }}/release/${{ github.event.repository.name }}.exe
 
   release:
     needs: build
@@ -50,7 +47,6 @@ jobs:
           REPO_NAME="${{ github.event.repository.name }}"
           [ -f artifacts/aarch64-apple-darwin/${REPO_NAME} ] && mv artifacts/aarch64-apple-darwin/${REPO_NAME} release-binaries/${REPO_NAME}-aarch64-apple-darwin
           [ -f artifacts/x86_64-unknown-linux-gnu/${REPO_NAME} ] && mv artifacts/x86_64-unknown-linux-gnu/${REPO_NAME} release-binaries/${REPO_NAME}-x86_64-unknown-linux-gnu
-          [ -f artifacts/x86_64-pc-windows-gnu/${REPO_NAME}.exe ] && mv artifacts/x86_64-pc-windows-gnu/${REPO_NAME}.exe release-binaries/${REPO_NAME}-x86_64-pc-windows-gnu.exe
           ls -lah release-binaries/
       - name: Create Release
         uses: softprops/action-gh-release@v1
