@@ -142,7 +142,7 @@ pub async fn run_scraper(no_ai: bool, no_email: bool, no_telegram: bool) -> Resu
 
     // 11) Deduplication sources
     let published_bullets   = db.fetch_latest_published_bullets()?;          // suppressors
-    info!("These are the existing bullets that will be deduplicated against: {:#?}", published_bullets);
+    info!("These are yesterday's bullet points that will be deduplicated against: {:#?}", published_bullets.iter().map(|b| b.text.clone()).collect::<Vec<String>>());
     let carryover_bullets   = db.fetch_unpublished_accepted_bullets_since_last_published()?;
 
     // merge today's candidates with carryover BEFORE dedup
@@ -158,19 +158,27 @@ pub async fn run_scraper(no_ai: bool, no_email: bool, no_telegram: bool) -> Resu
             merged.items.push(b);             // move the whole Bullet (including text)
         }
     }
-    info!("These are today's bullet candidates (note: they should be the sum of the previous two): {:#?}", merged);
+    info!("These are today's bullet candidates: {:#?}", merged.items.iter().map(|b| b.text.clone()).collect::<Vec<String>>());
 
     // run dedup USING published bullets as the "previous" set
     let processed_summary = ai_deduplicate(&cfg, &published_bullets, &merged).await?;
 
-    info!("This is what the deduplicator returned {:#?}", processed_summary.items);
+    info!("The deduplicator accepted {} bullet points.",
+        processed_summary
+            .items
+            .iter()
+            .filter(|i| i.accepted == Some(true))
+            .count());
 
-    // count accepted
-    let accepted_count = processed_summary.items.iter()
-        .filter(|b| b.accepted == Some(true))
-        .count();
+    info!("The deduplicator rejected {} bullet points. To check what was rejected, query the database.",
+        processed_summary
+            .items
+            .iter()
+            .filter(|i| i.accepted == Some(false))
+            .count());
 
-    info!("There were {} accepted bullet points for today.", accepted_count);
+    debug!("This is what the deduplicator returned {:#?}", processed_summary.items);
+
     // persist summary (do not flip accepted flags)
     db.insert_summary(fetch_id, &processed_summary)?;
 

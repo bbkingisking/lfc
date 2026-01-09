@@ -5,7 +5,7 @@ use url::{Url};
 use anyhow::{Result, anyhow};
 use std::collections::{HashSet, HashMap};
 use chrono::{DateTime, Utc, Datelike};
-use log::debug;
+use log::{debug, info};
 use crate::utils::clean_html_tags;
 
 /// Coordinator function that discovers articles from all sources concurrently
@@ -166,6 +166,8 @@ pub async fn extract_article(client: &Client, url: &Url) -> Result<NewsArticle> 
         .remove("author")
         .unwrap_or_else(|| "Unknown".to_string());
 
+    info!("Successfully scraped football365 article: {}", url.clone());
+
     Ok(NewsArticle {
         url: url.clone(),
         og_title,
@@ -260,7 +262,7 @@ pub async fn extract_thisisanfield_article(client: &Client, url: &Url) -> Result
             // Extract text content and also get inner HTML as fallback
             let text = paragraph.text().collect::<Vec<_>>().join(" ").trim().to_string();
             let inner_html = paragraph.inner_html();
-            
+
             // If text extraction failed but there's HTML content, clean it
             let final_text = if text.is_empty() && !inner_html.trim().is_empty() {
                 clean_html_tags(&inner_html)
@@ -298,7 +300,7 @@ pub async fn extract_thisisanfield_article(client: &Client, url: &Url) -> Result
             // Extract text content and also get inner HTML as fallback
             let text = paragraph.text().collect::<Vec<_>>().join(" ").trim().to_string();
             let inner_html = paragraph.inner_html();
-            
+
             // If text extraction failed but there's HTML content, clean it
             let final_text = if text.is_empty() && !inner_html.trim().is_empty() {
                 clean_html_tags(&inner_html)
@@ -349,6 +351,8 @@ pub async fn extract_thisisanfield_article(client: &Client, url: &Url) -> Result
         .remove("author")
         .unwrap_or_else(|| "This Is Anfield".to_string());
 
+    info!("Successfully scraped thisisanfield article: {}", url.clone());
+
     Ok(NewsArticle {
         url: url.clone(),
         og_title,
@@ -398,25 +402,25 @@ mod tests {
             assert_eq!(article.source, "thisisanfield");
             assert!(!article.og_title.is_empty());
             assert!(!article.text.is_empty());
-            
+
             // Verify that no HTML tags remain in the extracted text
             assert!(!article.text.contains("<img"), "HTML img tags should be removed");
             assert!(!article.text.contains("<div"), "HTML div tags should be removed");
             assert!(!article.text.contains("<p>"), "HTML p tags should be removed");
             assert!(!article.text.contains("</p>"), "HTML closing p tags should be removed");
             assert!(!article.text.contains("&nbsp;"), "HTML entities should be cleaned");
-            
-            println!("  First 200 chars: {}", 
-                if article.text.len() > 200 { 
-                    &article.text[..200] 
-                } else { 
-                    &article.text 
+
+            println!("  First 200 chars: {}",
+                if article.text.len() > 200 {
+                    &article.text[..200]
+                } else {
+                    &article.text
                 });
         } else {
             println!("No articles found to test with");
         }
     }
-    
+
     #[test]
     fn test_html_cleaning_integration() {
         // Test that HTML cleaning works with typical This Is Anfield content
@@ -425,9 +429,9 @@ mod tests {
         <div class="wp-caption">Some caption text</div>
         [caption id="123"]Image caption[/caption]
         <strong>The Reds</strong> played well in the match."#;
-        
+
         let cleaned = clean_html_tags(mock_html_content);
-        
+
         // Verify HTML tags are removed
         assert!(!cleaned.contains("<img"));
         assert!(!cleaned.contains("<p>"));
@@ -435,15 +439,15 @@ mod tests {
         assert!(!cleaned.contains("<div"));
         assert!(!cleaned.contains("<strong>"));
         assert!(!cleaned.contains("[caption"));
-        
+
         // Verify content remains
         assert!(cleaned.contains("Liverpool manager"));
         assert!(cleaned.contains("The Reds"));
         assert!(cleaned.contains("played well"));
-        
+
         // Verify entities are cleaned
         assert!(cleaned.contains("team's")); // &rsquo; should become '
-        
+
         println!("Cleaned content: {}", cleaned);
     }
 }

@@ -13,7 +13,7 @@ use serde_json::json;
 use tokio::time::Duration;
 use tiktoken_rs::{o200k_base, CoreBPE};
 use chrono::Local;
-use log::debug;
+use log::{debug, info};
 
 use crate::{calendar::Fixture, config::Config};
 use crate::models::{NewsArticle, Summary, Bullet};
@@ -95,6 +95,7 @@ pub async fn summarize_articles(cfg: &Config, articles: &[NewsArticle], fixture:
     messages.push(ChatCompletionRequestMessage::User(ChatCompletionRequestUserMessage::from(combined_text)));
 
     if let Some(f) = fixture {
+        info!("There is a fixture today: {} at {}. Inserting a dynamic prompt about it…", &f.opponent, &f.date);
         let prompt = format!("We are playing against {} today at {}. The first bullet point you generate should be about that match.", f.opponent, f.date);
         messages.push(ChatCompletionRequestMessage::User(ChatCompletionRequestUserMessage::from(prompt)));
     }
