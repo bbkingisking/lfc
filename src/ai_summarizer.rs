@@ -105,7 +105,7 @@ pub async fn summarize_articles(cfg: &Config, articles: &[NewsArticle], fixture:
         .messages(messages)
         .response_format(response_format)
         .service_tier(async_openai::types::ServiceTier::Flex)
-        .max_tokens(1000u32)
+        .max_completion_tokens(1000u32)
         .build()
         .context("Failed to build OpenAI request")?;
 
