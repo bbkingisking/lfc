@@ -1,12 +1,8 @@
 use anyhow::{Context, Result};
 use async_openai::{
-    types::{
-        ChatCompletionRequestMessage, ChatCompletionRequestSystemMessage,
-        ChatCompletionRequestUserMessage, CreateChatCompletionRequestArgs,
-        ResponseFormat, ResponseFormatJsonSchema,
-    },
-    Client,
-    config::OpenAIConfig,
+    Client, config::OpenAIConfig, types::{
+        ChatCompletionRequestMessage, ChatCompletionRequestSystemMessage, ChatCompletionRequestUserMessage, CreateChatCompletionRequestArgs, ReasoningEffort, ResponseFormat, ResponseFormatJsonSchema
+    }
 };
 use serde::{Deserialize};
 use serde_json::json;
@@ -105,7 +101,8 @@ pub async fn summarize_articles(cfg: &Config, articles: &[NewsArticle], fixture:
         .messages(messages)
         .response_format(response_format)
         .service_tier(async_openai::types::ServiceTier::Flex)
-        .max_completion_tokens(1000u32)
+        .max_completion_tokens(5000u32)
+        .reasoning_effort(ReasoningEffort::Low)
         .build()
         .context("Failed to build OpenAI request")?;
 
@@ -134,6 +131,7 @@ pub async fn summarize_articles(cfg: &Config, articles: &[NewsArticle], fixture:
     };
 
     debug!("Processing {} response choices", response.choices.len());
+    debug!("Here is the raw response: {:#?}", response);
     for choice in response.choices {
         if let Some(content) = choice.message.content {
             debug!("Received response content, length: {} chars", content.len());
