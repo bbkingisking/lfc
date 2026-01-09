@@ -6,7 +6,7 @@ use crate::config::{Config, EnsureOutcome};
 use crate::db::{Db, load_existing_urls_from_db};
 use crate::logger::init_logger;
 use crate::models::NewsArticle;
-use crate::extractor::{extract_article, discover_all_articles, extract_thisisanfield_article};
+use crate::extractor::{extract_f365_article, discover_all_articles, extract_thisisanfield_article};
 use crate::ai_summarizer::summarize_articles;
 use crate::ai_deduplicator::ai_deduplicate;
 use crate::utils::format_summary_plain_text;
@@ -105,7 +105,7 @@ pub async fn run_scraper(no_ai: bool, no_email: bool, no_telegram: bool) -> Resu
             let extract_result = if url_clone.host_str() == Some("www.thisisanfield.com") {
                 extract_thisisanfield_article(&client, &url_clone).await
             } else {
-                extract_article(&client, &url_clone).await
+                extract_f365_article(&client, &url_clone).await
             };
 
             match extract_result {

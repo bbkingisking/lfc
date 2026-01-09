@@ -72,7 +72,7 @@ async fn extract_football365_articles() -> Result<HashSet<Url>> {
 }
 
 
-pub async fn extract_article(client: &Client, url: &Url) -> Result<NewsArticle> {
+pub async fn extract_f365_article(client: &Client, url: &Url) -> Result<NewsArticle> {
     let res = client
         .get(url.to_string())
         .send()
