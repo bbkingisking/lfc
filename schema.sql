@@ -32,3 +32,10 @@ CREATE TABLE IF NOT EXISTS bullets (
     accepted BOOLEAN DEFAULT NULL, -- NULL = not yet filtered, TRUE/FALSE = LLM decision
     FOREIGN KEY(fetch_id) REFERENCES fetches(id) ON DELETE CASCADE
 );
+
+CREATE VIEW IF NOT EXISTS latest_rejected_bullets AS
+SELECT b.id, b.text, f.fetched_at
+FROM bullets b
+JOIN fetches f ON b.fetch_id = f.id
+WHERE f.id = (SELECT MAX(id) FROM fetches)
+  AND b.accepted = 0;
