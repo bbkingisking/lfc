@@ -1,6 +1,6 @@
 [package]
 name = "lfc"
-version = "0.2.1"
+version = "0.3.0"
 edition = "2024"
 authors = ["bbkingisking <poodle.dollies_4y@icloud.com>"]
 description = "Summarize Liverpool FC news"
@@ -13,6 +13,7 @@ async-openai = "0.29.3"
 chrono = { version = "0.4.41", features = ["serde"] }
 clap = { version = "4.0", features = ["derive"] }
 env_logger = "0.11.8"
+ftail = "0.3.1"
 futures = "0.3.31"
 ical = "0.11.0"
 lettre = { version = "0.11.18", features = ["tokio1", "smtp-transport", "tokio1-native-tls"] }

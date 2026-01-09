@@ -4,6 +4,7 @@ use url::Url;
 use crate::calendar::check_today_fixture;
 use crate::config::{Config, EnsureOutcome};
 use crate::db::{Db, load_existing_urls_from_db};
+use crate::logger::init_logger;
 use crate::models::NewsArticle;
 use crate::extractor::{extract_article, discover_all_articles, extract_thisisanfield_article};
 use crate::ai_summarizer::summarize_articles;
@@ -17,7 +18,7 @@ use log::{debug, info, error};
 
 pub async fn run_scraper(no_ai: bool, no_email: bool, no_telegram: bool) -> Result<()> {
     // 0) Initialize logger
-    env_logger::init();
+    init_logger()?;
     debug!("Logger initialized");
 
     // 1) Ensure config exists

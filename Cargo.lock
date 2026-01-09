@@ -759,6 +759,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ftail"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e83da81a8199b107be634ea9deaf0de182b152c9681bd8986791e04544ac5aa0"
+dependencies = [
+ "chrono",
+ "log",
+]
+
+[[package]]
 name = "futf"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1442,13 +1452,14 @@ dependencies = [
 
 [[package]]
 name = "lfc"
-version = "0.2.1"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "async-openai",
  "chrono",
  "clap",
  "env_logger",
+ "ftail",
  "futures",
  "ical",
  "lettre",

@@ -9,6 +9,7 @@ mod utils;
 mod email;
 mod telegram;
 mod calendar;
+mod logger;
 
 use anyhow::Result;
 use clap::Parser;
