@@ -23,7 +23,7 @@ struct RawAiSummary {
     mood: String,
     items: Vec<String>,
 }
-const MAX_TOKENS: usize = 100_000;
+const MAX_TOKENS: usize = 350_000;
 const MIN_BODY_TOKENS: usize = 40; // don't over-trim tiny bodies
 const SEP_TOKENS_PER_ARTICLE: usize = 6; // rough buffer for "\n\n" joins
 
@@ -104,6 +104,7 @@ pub async fn summarize_articles(cfg: &Config, articles: &[NewsArticle], fixture:
         .model(&cfg.model)
         .messages(messages)
         .response_format(response_format)
+        .service_tier(async_openai::types::ServiceTier::Flex)
         .max_tokens(1000u32)
         .build()
         .context("Failed to build OpenAI request")?;

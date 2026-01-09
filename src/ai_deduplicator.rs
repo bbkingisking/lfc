@@ -81,6 +81,7 @@ Respond only with a structured JSON array of true/false, in the same order as th
         ])
         .response_format(response_format)
         .max_tokens(500u32)
+        .service_tier(async_openai::types::ServiceTier::Flex)
         .build()
         .context("Failed to build deduplication request")?;
 
