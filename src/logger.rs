@@ -6,7 +6,7 @@ use log::info;
 use std::env;
 use std::fs;
 
-const LOGS_DIR: &str = "logs";
+const LOGS_DIR: &str = ".logs";
 const PKG_NAME: &str = env!("CARGO_PKG_NAME");
 
 pub fn init_logger() -> Result<()> {
@@ -36,7 +36,7 @@ pub fn init_logger() -> Result<()> {
     // Initialize the logger
     match Ftail::new()
         .console(LevelFilter::Warn)
-        .single_file(&logs_file, true, LevelFilter::Debug)
+        .single_file(&logs_file, true, LevelFilter::Info)
         .init()
     {
         Ok(_) => {
