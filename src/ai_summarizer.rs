@@ -48,14 +48,18 @@ pub async fn summarize_articles(cfg: &Config, articles: &[NewsArticle], fixture:
           "items": [string, string, ...]
         }
 
-        The "mood" string should be a ONE-SENTENCE summary stating whether the news is mostly positive, mostly negative, or mixed, and very briefly why.
+        The "mood" string should be a ONE-SENTENCE summary stating whether the news is mostly positive, mostly negative, or mixed, and very briefly why. You can start it with "The mood is …".
 
-        Each item in the "items" array of string is a bullet point summarizing some news/development. Feel free to end the bullet point text with an appropriate emoji. Don't repeat the same story across multiple bullet points, even if there are multiple articles talking about it.
+        Each item in the "items" array is a bullet point summarizing some news/development about Liverpool's men's team. Feel free to end the bullet point text with an appropriate emoji. Don't repeat the same story across multiple bullet points, even if there are multiple articles talking about it. They should be roughly ordered by importance.
 
         Feel free to be biased towards our beloved club. Use casual language and emojis.
+
         Feel free to ignore articles that are not relevant or that seem to be ads.
+
         Please do not use clickbait titles, summaries, or language. Be concise. Do not include live streaming information.
         The most important areas that fans would care about are potential transfers, injuries, player/team stats, and match summaries/previews.
+
+        Stylistically, go easy on the em dashes.
         "#;
 
     system_prompt.push_str(prompt);

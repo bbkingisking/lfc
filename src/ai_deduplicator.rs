@@ -80,7 +80,7 @@ Respond only with a structured JSON array of true/false, in the same order as th
             ChatCompletionRequestUserMessage::from(user_prompt).into(),
         ])
         .response_format(response_format)
-        .max_completion_tokens(1000u32)
+        .max_completion_tokens(2000u32)
         .reasoning_effort(ReasoningEffort::Low)
         .service_tier(async_openai::types::ServiceTier::Flex)
         .build()

@@ -1,6 +1,6 @@
 [package]
 name = "lfc"
-version = "0.3.1"
+version = "0.4.0"
 edition = "2024"
 authors = ["bbkingisking <poodle.dollies_4y@icloud.com>"]
 description = "Summarize Liverpool FC news"

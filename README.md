@@ -29,8 +29,9 @@ The configuration lives in config.yaml file in XDG_CONFIG_HOME (so ~/.config/lfc
 
 ```yaml
 api_key: OPEN-AI-API-KEY-HERE
-model: gpt-4o-mini # or whichever OpenAI model you prefer, mini is usually sufficient
-db_path: full_path # stores the scraped articles in SQLite
+model: gpt-5-mini # or any gpt-5 series model
+db_path: path/to/db.sqlite # stores the scraped articles in SQLite
+
 emails:
   - email_1
   - email_2
