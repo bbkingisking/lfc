@@ -180,33 +180,35 @@ pub async fn extract_f365_article(client: &Client, url: &Url) -> Result<NewsArti
 }
 
 pub async fn extract_thisisanfield_articles() -> Result<HashSet<Url>> {
-    let client = Client::new();
+    // TIA now use CloudFlare, so skip their links
+    Ok(HashSet::new())
+    // let client = Client::new();
 
-    // Fetch the main sitemap index
-    let sitemap_url = "https://www.thisisanfield.com/news-sitemap.xml";
-    let res = client.get(sitemap_url).send().await?.text().await?;
-    let document = Html::parse_document(&res);
+    // // Fetch the main sitemap index
+    // let sitemap_url = "https://www.thisisanfield.com/news-sitemap.xml";
+    // let res = client.get(sitemap_url).send().await?.text().await?;
+    // let document = Html::parse_document(&res);
 
-    // Select all loc elements (URLs)
-    let url_selector = Selector::parse("loc").unwrap();
-    let mut links = HashSet::new();
+    // // Select all loc elements (URLs)
+    // let url_selector = Selector::parse("loc").unwrap();
+    // let mut links = HashSet::new();
 
-    // Get current year dynamically
-    let current_year = Utc::now().year();
-    let year_prefix = format!("https://www.thisisanfield.com/{}/", current_year);
+    // // Get current year dynamically
+    // let current_year = Utc::now().year();
+    // let year_prefix = format!("https://www.thisisanfield.com/{}/", current_year);
 
-    for element in document.select(&url_selector) {
-        let url_text = element.text().collect::<String>();
-        if let Ok(url) = Url::parse(&url_text) {
-            // Filter for Liverpool-related articles from current year
-            let url_str = url.to_string();
-            if url_str.starts_with(&year_prefix) {
-                links.insert(url);
-            }
-        }
-    }
+    // for element in document.select(&url_selector) {
+    //     let url_text = element.text().collect::<String>();
+    //     if let Ok(url) = Url::parse(&url_text) {
+    //         // Filter for Liverpool-related articles from current year
+    //         let url_str = url.to_string();
+    //         if url_str.starts_with(&year_prefix) {
+    //             links.insert(url);
+    //         }
+    //     }
+    // }
 
-    Ok(links)
+    // Ok(links)
 }
 
 pub async fn extract_thisisanfield_article(client: &Client, url: &Url) -> Result<NewsArticle> {
