@@ -4,7 +4,7 @@ use scraper::{Html, Selector};
 use url::{Url};
 use anyhow::{Result, anyhow};
 use std::collections::{HashSet, HashMap};
-use chrono::{DateTime, Utc, Datelike};
+use chrono::{DateTime, Utc};
 use log::{debug, info};
 use crate::utils::clean_html_tags;
 

@@ -36,12 +36,12 @@ pub async fn run_scraper(no_ai: bool, no_email: bool, no_telegram: bool) -> Resu
 
     // 1a) Validate config based on enabled features
     if !no_email && (cfg.email_username.is_none() || cfg.email_app_password.is_none()) {
-        error!("Email configuration is missing but email notifications are enabled. Use --no-email to skip email notifications or configure email settings.");
+        error!("LFC_EMAIL_USERNAME and/or LFC_EMAIL_APP_PASSWORD env vars are not set. Use --no-email to skip email notifications.");
         return Ok(());
     }
 
     if !no_telegram && cfg.telegram_bot_token.is_none() {
-        error!("Telegram bot token is missing but telegram notifications are enabled. Use --no-telegram to skip telegram notifications or configure telegram_bot_token.");
+        error!("LFC_TELEGRAM_BOT_TOKEN env var is not set. Use --no-telegram to skip telegram notifications.");
         return Ok(());
     }
 
