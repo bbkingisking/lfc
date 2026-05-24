@@ -25,25 +25,23 @@ Make sure you have Rust installed, then:
 
 ## Config
 
-The configuration lives in config.yaml file in XDG_CONFIG_HOME (so ~/.config/lfc/ on Unix). It looks like this:
+Non-secret settings live in `config.yaml` in `XDG_CONFIG_HOME` (so `~/.config/lfc/` on Unix). Only `model` is required; `db_path` defaults to the XDG data directory if omitted:
 
 ```yaml
-api_key: OPEN-AI-API-KEY-HERE
 model: gpt-5-mini # or any gpt-5 series model
-db_path: path/to/db.sqlite # stores the scraped articles in SQLite
-
-emails:
-  - email_1
-  - email_2
-
-telegram_chat_ids:
-  - chat_id_1
-  - chat_id_2
-  
-telegram_bot_token: token_here
-email_username: email_credentials
-email_app_password: email_credentials
+# db_path: /custom/path/to/articles.db  # optional
 ```
+
+Secrets are read from environment variables:
+
+| Variable | Required | Description |
+|---|---|---|
+| `LFC_API_KEY` | yes | OpenAI API key |
+| `LFC_EMAILS` | no | Comma-separated recipient email addresses |
+| `LFC_TELEGRAM_CHAT_IDS` | no | Comma-separated Telegram chat IDs |
+| `LFC_TELEGRAM_BOT_TOKEN` | no | Telegram bot token |
+| `LFC_EMAIL_USERNAME` | no | SMTP email username |
+| `LFC_EMAIL_APP_PASSWORD` | no | SMTP email app password |
 
 ## Tips
 
