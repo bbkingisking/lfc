@@ -3,20 +3,15 @@ use anyhow::anyhow;
 use ftail::Ftail;
 use log::LevelFilter;
 use log::info;
-use std::env;
 use std::fs;
 
-const LOGS_DIR: &str = ".logs";
 const PKG_NAME: &str = env!("CARGO_PKG_NAME");
 
 pub fn init_logger() -> Result<()> {
-    let home_folder = match env::home_dir() {
-        Some(h) => h,
-        None => return Err(anyhow!("Could not determine $HOME")),
-    };
+    let data_dir = dirs::data_dir().expect("Could not determine data directory");
 
     // Get final dir
-    let logs_path = home_folder.join(LOGS_DIR).join(PKG_NAME);
+    let logs_path = data_dir.join(PKG_NAME);
 
     // Get final dir + filename
     let logs_file = logs_path.join(format!("{}.log", PKG_NAME));

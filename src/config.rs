@@ -28,6 +28,10 @@ pub struct Config {
     pub email_app_password: Option<String>,
 }
 
+fn config_dir() -> PathBuf {
+    dirs::config_dir().expect("Could not determine config directory").join("lfc")
+}
+
 fn default_db_path() -> PathBuf {
     let data_dir = dirs::data_dir().expect("Could not determine data directory");
     data_dir.join("lfc").join("articles.db")
@@ -50,17 +54,16 @@ pub struct EnsureOutcome {
 
 impl Config {
     pub fn ensure_user_config() -> Result<EnsureOutcome> {
-        let xdg_dirs = xdg::BaseDirectories::with_prefix("lfc");
+        let dir = config_dir();
+        let config_path = dir.join("config.yaml");
 
-        if let Some(path) = xdg_dirs.find_config_file("config.yaml") {
+        if config_path.exists() {
             return Ok(EnsureOutcome {
-                path,
+                path: config_path,
                 created: false,
             });
         } else {
-            let config_path = xdg_dirs
-                .place_config_file("config.yaml")
-                .expect("cannot create configuration directory");
+            fs::create_dir_all(&dir)?;
             let mut config_file = File::create(&config_path)?;
 
             write!(
@@ -76,7 +79,7 @@ impl Config {
 #   LFC_EMAIL_APP_PASSWORD    - SMTP email app password
 
 model: "gpt-4o-2024-08-06"
-# db_path: "/custom/path/to/articles.db"   # optional, defaults to XDG data dir
+# db_path: "/custom/path/to/articles.db"   # optional, defaults to data dir
 "#
             )?;
 
@@ -88,24 +91,23 @@ model: "gpt-4o-2024-08-06"
     }
 
     pub fn get_user_config() -> Result<Config> {
-        let xdg_dirs =
-            xdg::BaseDirectories::with_prefix("lfc").find_config_file("config.yaml");
+        let config_path = config_dir().join("config.yaml");
 
-        let Some(existing_config) = xdg_dirs else {
+        if !config_path.exists() {
             return Err(anyhow!(
                 "Could not read configuration file in config::get_user_config"
             ));
-        };
+        }
 
-        let raw = fs::read_to_string(&existing_config).with_context(|| {
-            format!("Failed to read {}", existing_config.display())
+        let raw = fs::read_to_string(&config_path).with_context(|| {
+            format!("Failed to read {}", config_path.display())
         })?;
         let deserialized = Deserializer::from_str(&raw);
         let mut cfg: Config =
             serde_path_to_error::deserialize(deserialized).map_err(|e| {
                 anyhow!(
                     "Invalid YAML in {} at `{}`: {}",
-                    existing_config.display(),
+                    config_path.display(),
                     e.path(),
                     e.inner()
                 )
